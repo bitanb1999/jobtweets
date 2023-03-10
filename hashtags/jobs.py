@@ -56,51 +56,50 @@ class TwitterClient(object):
         '''
        
         tweets = []
- 
+
         try:
           
             fetched_tweets = self.api.search(q = query, count = count)
- 
-           
+
+
             for tweet in fetched_tweets:
                
-                parsed_tweet = {}
- 
-               
-                parsed_tweet['text'] = tweet.text
-               
-                parsed_tweet['sentiment'] = self.get_tweet_sentiment(tweet.text)
- 
-                if tweet.retweet_count > 0:
+                parsed_tweet = {
+                    'text': tweet.text,
+                    'sentiment': self.get_tweet_sentiment(tweet.text),
+                }
                  
-                    if parsed_tweet not in tweets:
-                        tweets.append(parsed_tweet)
-                else:
+
+                if (
+                    tweet.retweet_count > 0
+                    and parsed_tweet not in tweets
+                    or tweet.retweet_count <= 0
+                ):
                     tweets.append(parsed_tweet)
- 
-        
             return tweets
- 
+
         except tweepy.TweepError as e:
-            print("Error : " + str(e))
+            print(f"Error : {str(e)}")
  
 def main():
     api = TwitterClient()
     tweets = api.get_tweets(query = 'Jobs', count = 500)
     ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
-   
-    print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
+
+    print(f"Positive tweets percentage: {100 * len(ptweets) / len(tweets)} %")
 
     ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
 
-    print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))
+    print(f"Negative tweets percentage: {100 * len(ntweets) / len(tweets)} %")
 
-    print("Neutral tweets percentage: {} % ".format(100*(len(tweets) - len(ntweets) - len(ptweets))/len(tweets)))
- 
+    print(
+        f"Neutral tweets percentage: {100 * (len(tweets) - len(ntweets) - len(ptweets)) / len(tweets)} % "
+    )
+
     print("\n\nPositive tweets:")
     for tweet in ptweets[:10]:
         print(tweet['text'])
- 
+
     print("\n\nNegative tweets:")
     for tweet in ntweets[:10]:
         print(tweet['text'])

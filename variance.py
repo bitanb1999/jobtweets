@@ -10,8 +10,7 @@ def find_variance(data):
       n = n + 1
       sum_ += x - K
       sum_sqr += (x - K) * (x - K)
-   variance = (sum_sqr - (sum_ * sum_)/n)/(n - 1)
-   return variance
+   return (sum_sqr - (sum_ * sum_)/n)/(n - 1)
 
 data=[52, 45, 45, 52, 26, 38, 15, 13]
 variance=find_variance(data)
